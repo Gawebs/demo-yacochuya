@@ -1,0 +1,512 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Yacochuya | Sistema de Producción Nexaia</title>
+<style>
+  :root{
+    --bg:#0F0F0F;
+    --bg-card:#1A1A1A;
+    --bg-card-2:#212121;
+    --border:#2C2A26;
+    --wine:#8B2635;
+    --wine-light:#A8364A;
+    --gold:#C9A84C;
+    --gold-soft:#E0C77A;
+    --text:#F5F0E8;
+    --text-dim:#A39C8E;
+    --green:#4A7C59;
+    --amber:#C17D11;
+    --red:#C0392B;
+    --radius:14px;
+  }
+  *{box-sizing:border-box;margin:0;padding:0;}
+  body{
+    background:var(--bg);
+    color:var(--text);
+    font-family:'Segoe UI',Arial,sans-serif;
+    min-height:100vh;
+    display:flex;
+  }
+  /* Sidebar */
+  .sidebar{
+    width:230px;
+    background:#141414;
+    border-right:1px solid var(--border);
+    display:flex;
+    flex-direction:column;
+    padding:24px 0;
+    position:fixed;
+    height:100vh;
+  }
+  .logo-area{
+    padding:0 20px 24px;
+    border-bottom:1px solid var(--border);
+    margin-bottom:16px;
+  }
+  .logo-area h1{
+    font-size:18px;
+    letter-spacing:2px;
+    color:var(--gold);
+    font-weight:600;
+  }
+  .logo-area span{
+    font-size:11px;
+    color:var(--text-dim);
+    letter-spacing:1px;
+  }
+  .nav-item{
+    display:flex;
+    align-items:center;
+    gap:12px;
+    padding:13px 20px;
+    color:var(--text-dim);
+    cursor:pointer;
+    font-size:14px;
+    border-left:3px solid transparent;
+    transition:all .15s;
+  }
+  .nav-item:hover{ background:#1c1c1c; color:var(--text); }
+  .nav-item.active{
+    color:var(--gold-soft);
+    border-left:3px solid var(--gold);
+    background:#1c1a16;
+  }
+  .nav-icon{ font-size:16px; width:18px; text-align:center; }
+
+  /* Main */
+  .main{ margin-left:230px; flex:1; padding:28px 36px; max-width:1400px; }
+  .topbar{
+    display:flex; justify-content:space-between; align-items:center;
+    margin-bottom:28px;
+  }
+  .topbar h2{ font-size:22px; font-weight:600; }
+  .topbar .sub{ color:var(--text-dim); font-size:13px; margin-top:4px; }
+  .badge-live{
+    background:var(--green); color:#fff; font-size:11px;
+    padding:4px 10px; border-radius:20px; font-weight:600;
+    display:inline-flex; align-items:center; gap:6px;
+  }
+  .dot{ width:6px;height:6px;border-radius:50%;background:#fff;animation:pulse 1.5s infinite; }
+  @keyframes pulse{ 0%,100%{opacity:1;} 50%{opacity:.3;} }
+
+  .grid{ display:grid; gap:18px; }
+  .grid-4{ grid-template-columns:repeat(4,1fr); }
+  .grid-3{ grid-template-columns:repeat(3,1fr); }
+  .grid-2{ grid-template-columns:repeat(2,1fr); }
+
+  .card{
+    background:var(--bg-card);
+    border:1px solid var(--border);
+    border-radius:var(--radius);
+    padding:20px;
+  }
+  .card h3{ font-size:14px; color:var(--text-dim); font-weight:500; margin-bottom:6px; }
+  .kpi-value{ font-size:30px; font-weight:700; color:var(--text); }
+  .kpi-sub{ font-size:12px; margin-top:6px; }
+  .kpi-sub.up{ color:var(--green); }
+  .kpi-sub.warn{ color:var(--amber); }
+  .kpi-sub.down{ color:var(--red); }
+
+  .section-title{
+    font-size:16px; font-weight:600; margin:28px 0 14px;
+    display:flex; align-items:center; gap:10px;
+  }
+  .section-title .accent{ width:4px;height:18px;background:var(--gold);border-radius:2px; }
+
+  table{ width:100%; border-collapse:collapse; font-size:13px; }
+  th{ text-align:left; color:var(--text-dim); font-weight:500; padding:10px 12px; border-bottom:1px solid var(--border); }
+  td{ padding:12px; border-bottom:1px solid #232323; }
+  tr:hover td{ background:#1e1e1e; }
+
+  .tag{ padding:3px 10px; border-radius:20px; font-size:11px; font-weight:600; display:inline-block; }
+  .tag-green{ background:rgba(74,124,89,.2); color:#7FBE93; }
+  .tag-amber{ background:rgba(193,125,17,.2); color:#E0A53D; }
+  .tag-red{ background:rgba(192,57,43,.2); color:#E07065; }
+  .tag-wine{ background:rgba(139,38,53,.25); color:#D88B97; }
+
+  .bar-bg{ background:#2a2a2a; border-radius:6px; height:8px; width:100%; overflow:hidden; }
+  .bar-fill{ height:100%; border-radius:6px; }
+
+  .ai-box{
+    background:linear-gradient(135deg, rgba(139,38,53,.12), rgba(201,168,76,.08));
+    border:1px solid rgba(201,168,76,.3);
+    border-radius:var(--radius);
+    padding:18px 20px;
+    display:flex; gap:14px; align-items:flex-start;
+  }
+  .ai-icon{
+    width:34px;height:34px;border-radius:10px;
+    background:var(--gold); color:#1A1A1A;
+    display:flex;align-items:center;justify-content:center;
+    font-weight:700; font-size:15px; flex-shrink:0;
+  }
+  .ai-box .ai-text strong{ color:var(--gold-soft); }
+  .ai-box .ai-text{ font-size:13px; line-height:1.6; color:var(--text); }
+
+  .tank-grid{ display:grid; grid-template-columns:repeat(4,1fr); gap:16px; }
+  .tank{
+    background:var(--bg-card-2); border:1px solid var(--border); border-radius:12px;
+    padding:16px; text-align:center; position:relative;
+  }
+  .tank-fill-visual{
+    width:50px;height:80px;margin:10px auto;border:2px solid var(--gold);
+    border-radius:6px; position:relative; overflow:hidden; background:#161616;
+  }
+  .tank-liquid{ position:absolute; bottom:0; left:0; right:0; background:var(--wine); }
+  .temp-badge{ font-size:11px; padding:2px 8px; border-radius:10px; font-weight:600; }
+
+  .view{ display:none; }
+  .view.active{ display:block; }
+
+  .btn{
+    background:var(--gold); color:#1a1a1a; border:none; padding:10px 18px;
+    border-radius:8px; font-weight:600; font-size:13px; cursor:pointer;
+  }
+  .btn:hover{ background:var(--gold-soft); }
+  .btn-outline{
+    background:transparent; border:1px solid var(--border); color:var(--text);
+    padding:9px 16px; border-radius:8px; font-size:13px; cursor:pointer;
+  }
+
+  .progress-row{ display:flex; align-items:center; gap:10px; }
+  .progress-row .bar-bg{ flex:1; }
+  .progress-row .pct{ font-size:12px; color:var(--text-dim); width:36px; text-align:right; }
+
+  .insumo-row{ display:flex; justify-content:space-between; align-items:center; padding:12px 0; border-bottom:1px solid #232323; }
+  .insumo-name{ font-size:13px; font-weight:600; }
+  .insumo-prov{ font-size:11px; color:var(--text-dim); }
+
+  .barrel-row{ display:flex; align-items:center; gap:14px; padding:14px 0; border-bottom:1px solid #232323; }
+  .barrel-icon{ font-size:22px; }
+
+  .flash{ animation:flashGreen 1s ease; }
+  @keyframes flashGreen{
+    0%{ background:rgba(74,124,89,.4); }
+    100%{ background:transparent; }
+  }
+  .embotellado-demo{
+    background:var(--bg-card-2); border:1px solid var(--border); border-radius:var(--radius);
+    padding:24px; text-align:center;
+  }
+  .bottle-counter{ font-size:48px; font-weight:800; color:var(--gold-soft); }
+</style>
+</head>
+<body>
+
+<div class="sidebar">
+  <div class="logo-area">
+    <h1>YACOCHUYA</h1>
+    <span>Sistema de Producción · Nexaia</span>
+  </div>
+  <div class="nav-item active" data-view="dashboard"><span class="nav-icon">◆</span> Dashboard</div>
+  <div class="nav-item" data-view="vinedo"><span class="nav-icon">🌿</span> Viñedo</div>
+  <div class="nav-item" data-view="cosecha"><span class="nav-icon">🍇</span> Cosecha</div>
+  <div class="nav-item" data-view="fermentacion"><span class="nav-icon">🔥</span> Fermentación</div>
+  <div class="nav-item" data-view="barricas"><span class="nav-icon">🛢️</span> Barricas</div>
+  <div class="nav-item" data-view="embotellado"><span class="nav-icon">🍾</span> Embotellado</div>
+  <div class="nav-item" data-view="stock"><span class="nav-icon">📦</span> Stock Insumos</div>
+  <div class="nav-item" data-view="proveedores"><span class="nav-icon">🤝</span> Proveedores</div>
+</div>
+
+<div class="main">
+
+  <!-- DASHBOARD -->
+  <div class="view active" id="dashboard">
+    <div class="topbar">
+      <div>
+        <h2>Dashboard General</h2>
+        <div class="sub">Campaña 2026 · Finca Yacochuya, Cafayate</div>
+      </div>
+      <span class="badge-live"><span class="dot"></span> Datos en vivo</span>
+    </div>
+
+    <div class="grid grid-4">
+      <div class="card">
+        <h3>Litros en proceso</h3>
+        <div class="kpi-value">84.200 L</div>
+        <div class="kpi-sub up">↑ 6% vs campaña anterior</div>
+      </div>
+      <div class="card">
+        <h3>Tanques activos</h3>
+        <div class="kpi-value">11 / 14</div>
+        <div class="kpi-sub warn">2 próximos a trasiego</div>
+      </div>
+      <div class="card">
+        <h3>Barricas en guarda</h3>
+        <div class="kpi-value">186</div>
+        <div class="kpi-sub up">14 listas para embotellar</div>
+      </div>
+      <div class="card">
+        <h3>Stock crítico</h3>
+        <div class="kpi-value">3 insumos</div>
+        <div class="kpi-sub down">Corchos premium bajo mínimo</div>
+      </div>
+    </div>
+
+    <div class="section-title"><span class="accent"></span> Asistente Nexaia</div>
+    <div class="ai-box">
+      <div class="ai-icon">AI</div>
+      <div class="ai-text">
+        <strong>Resumen del día:</strong> el tanque T-04 (Malbec Alto Gradiente) llegó a 13.8° Brix, alcohol probable proyectado <strong>14.6%</strong>. Recomiendo trasiego en las próximas 48hs. Las barricas del lote B-2024-07 cumplen 18 meses el 12/07: están listas para evaluación de embotellado. Con el consumo actual, el stock de corchos premium se agota en <strong>9 días</strong> — sugiero generar orden de compra a Corchera Trapal hoy.
+      </div>
+    </div>
+
+    <div class="section-title"><span class="accent"></span> Producción por varietal</div>
+    <div class="grid grid-3">
+      <div class="card">
+        <h3>Malbec</h3>
+        <div class="progress-row"><div class="bar-bg"><div class="bar-fill" style="width:72%;background:var(--wine)"></div></div><span class="pct">72%</span></div>
+        <div class="kpi-sub" style="color:var(--text-dim);margin-top:8px;">38.500 L en proceso</div>
+      </div>
+      <div class="card">
+        <h3>Torrontés</h3>
+        <div class="progress-row"><div class="bar-bg"><div class="bar-fill" style="width:91%;background:var(--gold)"></div></div><span class="pct">91%</span></div>
+        <div class="kpi-sub" style="color:var(--text-dim);margin-top:8px;">22.100 L en proceso</div>
+      </div>
+      <div class="card">
+        <h3>Cabernet Sauvignon</h3>
+        <div class="progress-row"><div class="bar-bg"><div class="bar-fill" style="width:48%;background:var(--wine-light)"></div></div><span class="pct">48%</span></div>
+        <div class="kpi-sub" style="color:var(--text-dim);margin-top:8px;">23.600 L en proceso</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- VINEDO -->
+  <div class="view" id="vinedo">
+    <div class="topbar">
+      <div><h2>Viñedo</h2><div class="sub">Parcelas y varietales · Finca Yacochuya, 2.035 msnm</div></div>
+      <button class="btn">+ Registrar labor</button>
+    </div>
+    <table>
+      <tr><th>Parcela</th><th>Varietal</th><th>Hectáreas</th><th>Año plantación</th><th>Estado fenológico</th><th>Última labor</th></tr>
+      <tr><td>P-01 Alto</td><td>Malbec</td><td>4.2 ha</td><td>1998</td><td><span class="tag tag-green">Envero avanzado</span></td><td>Deshoje · 22/06</td></tr>
+      <tr><td>P-02 Bajo</td><td>Torrontés</td><td>3.8 ha</td><td>2003</td><td><span class="tag tag-amber">Maduración</span></td><td>Riego · 25/06</td></tr>
+      <tr><td>P-03 Este</td><td>Cabernet Sauvignon</td><td>2.9 ha</td><td>2010</td><td><span class="tag tag-green">Envero avanzado</span></td><td>Control plagas · 20/06</td></tr>
+      <tr><td>P-04 Oeste</td><td>Malbec</td><td>5.1 ha</td><td>1995</td><td><span class="tag tag-wine">Pre-cosecha</span></td><td>Raleo racimos · 18/06</td></tr>
+    </table>
+
+    <div class="section-title"><span class="accent"></span> Asistente Nexaia</div>
+    <div class="ai-box">
+      <div class="ai-icon">AI</div>
+      <div class="ai-text">Parcela P-04 Oeste muestra condiciones óptimas de madurez fenólica para cosecha en los próximos 5-7 días según histórico de campañas anteriores y temperatura acumulada. Sugiero coordinar cuadrilla de cosecha.</div>
+    </div>
+  </div>
+
+  <!-- COSECHA -->
+  <div class="view" id="cosecha">
+    <div class="topbar">
+      <div><h2>Cosecha</h2><div class="sub">Registro de ingreso de uva</div></div>
+      <button class="btn">+ Nuevo ingreso</button>
+    </div>
+    <table>
+      <tr><th>Fecha</th><th>Parcela</th><th>Kg ingresados</th><th>°Brix</th><th>pH</th><th>Acidez total</th><th>Destino</th></tr>
+      <tr><td>28/06</td><td>P-02 Bajo (Torrontés)</td><td>3.420 kg</td><td>22.1°</td><td>3.32</td><td>5.8 g/L</td><td>Tanque T-09</td></tr>
+      <tr><td>26/06</td><td>P-01 Alto (Malbec)</td><td>5.180 kg</td><td>24.6°</td><td>3.61</td><td>5.1 g/L</td><td>Tanque T-04</td></tr>
+      <tr><td>24/06</td><td>P-03 Este (Cabernet)</td><td>2.890 kg</td><td>23.8°</td><td>3.55</td><td>5.4 g/L</td><td>Tanque T-07</td></tr>
+    </table>
+    <div class="section-title"><span class="accent"></span> Asistente Nexaia</div>
+    <div class="ai-box">
+      <div class="ai-icon">AI</div>
+      <div class="ai-text">Con 24.6° Brix y densidad estable, el lote del 26/06 (P-01 Alto) proyecta un <strong>14.5% de alcohol potencial</strong>. Comparado con el promedio histórico de esa parcela (24.1° Brix), está 2% por encima — buena señal de concentración para esta campaña.</div>
+    </div>
+  </div>
+
+  <!-- FERMENTACION -->
+  <div class="view" id="fermentacion">
+    <div class="topbar">
+      <div><h2>Fermentación</h2><div class="sub">Tanques activos · Monitoreo en tiempo real</div></div>
+      <span class="badge-live"><span class="dot"></span> 11 tanques activos</span>
+    </div>
+    <div class="tank-grid">
+      <div class="tank">
+        <div style="font-weight:600;">T-04</div>
+        <div style="font-size:11px;color:var(--text-dim);">Malbec Alto Gradiente</div>
+        <div class="tank-fill-visual"><div class="tank-liquid" style="height:78%;"></div></div>
+        <div>13.8° Brix</div>
+        <span class="temp-badge tag-amber">26.4°C</span>
+      </div>
+      <div class="tank">
+        <div style="font-weight:600;">T-07</div>
+        <div style="font-size:11px;color:var(--text-dim);">Cabernet Sauvignon</div>
+        <div class="tank-fill-visual"><div class="tank-liquid" style="height:55%;"></div></div>
+        <div>9.2° Brix</div>
+        <span class="temp-badge tag-green">22.1°C</span>
+      </div>
+      <div class="tank">
+        <div style="font-weight:600;">T-09</div>
+        <div style="font-size:11px;color:var(--text-dim);">Torrontés</div>
+        <div class="tank-fill-visual"><div class="tank-liquid" style="height:30%;background:var(--gold);"></div></div>
+        <div>3.1° Brix</div>
+        <span class="temp-badge tag-green">16.8°C</span>
+      </div>
+      <div class="tank">
+        <div style="font-weight:600;">T-11</div>
+        <div style="font-size:11px;color:var(--text-dim);">Malbec Oeste</div>
+        <div class="tank-fill-visual"><div class="tank-liquid" style="height:90%;"></div></div>
+        <div>15.9° Brix</div>
+        <span class="temp-badge tag-red">29.7°C</span>
+      </div>
+    </div>
+    <div class="section-title"><span class="accent"></span> Asistente Nexaia</div>
+    <div class="ai-box">
+      <div class="ai-icon">AI</div>
+      <div class="ai-text"><strong>Alerta T-11:</strong> temperatura en 29.7°C, por encima del rango óptimo de fermentación tinta (24-28°C). Riesgo de pérdida de aromas varietales y paro de levaduras. Se recomienda activar camisa de frío de inmediato.</div>
+    </div>
+  </div>
+
+  <!-- BARRICAS -->
+  <div class="view" id="barricas">
+    <div class="topbar">
+      <div><h2>Barricas</h2><div class="sub">Guarda y trazabilidad · 186 barricas activas</div></div>
+      <button class="btn">+ Nuevo lote</button>
+    </div>
+    <div class="barrel-row"><span class="barrel-icon">🛢️</span><div style="flex:1;"><div class="insumo-name">Lote B-2024-07 · Malbec</div><div class="insumo-prov">Roble francés · Tonelería Nadalié · 18 meses cumplidos</div></div><span class="tag tag-green">Lista para embotellar</span></div>
+    <div class="barrel-row"><span class="barrel-icon">🛢️</span><div style="flex:1;"><div class="insumo-name">Lote B-2024-11 · Cabernet</div><div class="insumo-prov">Roble americano · Tonelería Garbellotto · 14 meses</div></div><span class="tag tag-amber">4 meses restantes</span></div>
+    <div class="barrel-row"><span class="barrel-icon">🛢️</span><div style="flex:1;"><div class="insumo-name">Lote B-2025-02 · Malbec Reserva</div><div class="insumo-prov">Roble francés · Tonelería Nadalié · 6 meses</div></div><span class="tag tag-wine">En guarda</span></div>
+    <div class="section-title"><span class="accent"></span> Asistente Nexaia</div>
+    <div class="ai-box">
+      <div class="ai-icon">AI</div>
+      <div class="ai-text">El lote B-2024-07 alcanzó el punto óptimo de extracción tánica según el perfil histórico de esa combinación varietal/roble. Recomiendo programar cata de evaluación esta semana antes de definir embotellado.</div>
+    </div>
+  </div>
+
+  <!-- EMBOTELLADO (WOW) -->
+  <div class="view" id="embotellado">
+    <div class="topbar">
+      <div><h2>Embotellado</h2><div class="sub">Carga de producción · Consumo automático de insumos</div></div>
+    </div>
+    <div class="embotellado-demo">
+      <h3 style="color:var(--text-dim);font-weight:500;margin-bottom:8px;">Lote B-2024-07 · Malbec Reserva</h3>
+      <div class="bottle-counter" id="bottleCount">0</div>
+      <div style="color:var(--text-dim);font-size:13px;margin-bottom:18px;">botellas cargadas</div>
+      <button class="btn" onclick="runEmbotellado()">▶ Iniciar carga de producción (8.400 botellas)</button>
+    </div>
+
+    <div class="section-title"><span class="accent"></span> Consumo de insumos en tiempo real</div>
+    <div class="grid grid-4">
+      <div class="card"><h3>Botellas 750ml</h3><div class="kpi-value" id="ins-botellas">12.500</div><div class="bar-bg" style="margin-top:8px;"><div class="bar-fill" id="bar-botellas" style="width:100%;background:var(--green);"></div></div></div>
+      <div class="card"><h3>Corchos premium</h3><div class="kpi-value" id="ins-corchos">9.800</div><div class="bar-bg" style="margin-top:8px;"><div class="bar-fill" id="bar-corchos" style="width:100%;background:var(--green);"></div></div></div>
+      <div class="card"><h3>Etiquetas frontales</h3><div class="kpi-value" id="ins-etiquetas">11.200</div><div class="bar-bg" style="margin-top:8px;"><div class="bar-fill" id="bar-etiquetas" style="width:100%;background:var(--green);"></div></div></div>
+      <div class="card"><h3>Cápsulas</h3><div class="kpi-value" id="ins-capsulas">10.600</div><div class="bar-bg" style="margin-top:8px;"><div class="bar-fill" id="bar-capsulas" style="width:100%;background:var(--green);"></div></div></div>
+    </div>
+    <div class="section-title"><span class="accent"></span> Asistente Nexaia</div>
+    <div class="ai-box" id="embo-ai">
+      <div class="ai-icon">AI</div>
+      <div class="ai-text">Iniciá la carga para ver cómo el sistema descuenta automáticamente cada insumo del stock general, sin planillas ni conteo manual.</div>
+    </div>
+  </div>
+
+  <!-- STOCK -->
+  <div class="view" id="stock">
+    <div class="topbar">
+      <div><h2>Stock de Insumos</h2><div class="sub">Botellas, corchos, etiquetas, cápsulas y materiales secos</div></div>
+      <button class="btn">+ Orden de compra</button>
+    </div>
+    <div class="insumo-row">
+      <div><div class="insumo-name">Botellas 750ml Bordalesa</div><div class="insumo-prov">Proveedor: Cattorini Hnos.</div></div>
+      <div style="width:200px;"><div class="bar-bg"><div class="bar-fill" style="width:78%;background:var(--green);"></div></div></div>
+      <span class="tag tag-green">12.500 u</span>
+    </div>
+    <div class="insumo-row">
+      <div><div class="insumo-name">Corchos premium 49mm</div><div class="insumo-prov">Proveedor: Corchera Trapal</div></div>
+      <div style="width:200px;"><div class="bar-bg"><div class="bar-fill" style="width:18%;background:var(--red);"></div></div></div>
+      <span class="tag tag-red">9.800 u · agota en 9 días</span>
+    </div>
+    <div class="insumo-row">
+      <div><div class="insumo-name">Etiquetas frontales Reserva</div><div class="insumo-prov">Proveedor: Gráfica Cuyo</div></div>
+      <div style="width:200px;"><div class="bar-bg"><div class="bar-fill" style="width:64%;background:var(--green);"></div></div></div>
+      <span class="tag tag-green">11.200 u</span>
+    </div>
+    <div class="insumo-row">
+      <div><div class="insumo-name">Cápsulas termoencogibles</div><div class="insumo-prov">Proveedor: Pack Andino</div></div>
+      <div style="width:200px;"><div class="bar-bg"><div class="bar-fill" style="width:42%;background:var(--amber);"></div></div></div>
+      <span class="tag tag-amber">10.600 u</span>
+    </div>
+    <div class="insumo-row">
+      <div><div class="insumo-name">Cajas x6 cartón</div><div class="insumo-prov">Proveedor: Cartonajes Salta</div></div>
+      <div style="width:200px;"><div class="bar-bg"><div class="bar-fill" style="width:88%;background:var(--green);"></div></div></div>
+      <span class="tag tag-green">2.100 u</span>
+    </div>
+    <div class="section-title"><span class="accent"></span> Asistente Nexaia</div>
+    <div class="ai-box">
+      <div class="ai-icon">AI</div>
+      <div class="ai-text">Con el ritmo de embotellado proyectado para julio, los <strong>corchos premium</strong> son el insumo crítico: se agotan antes que cualquier otro material. Genero automáticamente una propuesta de orden de compra a Corchera Trapal por 15.000 unidades, basada en el consumo histórico.</div>
+    </div>
+  </div>
+
+  <!-- PROVEEDORES -->
+  <div class="view" id="proveedores">
+    <div class="topbar">
+      <div><h2>Proveedores</h2><div class="sub">Costos, historial y optimización de compras</div></div>
+      <button class="btn">+ Nuevo proveedor</button>
+    </div>
+    <table>
+      <tr><th>Proveedor</th><th>Insumo</th><th>Precio actual</th><th>Última compra</th><th>Tendencia</th><th>Sugerencia IA</th></tr>
+      <tr><td>Corchera Trapal</td><td>Corchos premium</td><td>$412 / u</td><td>14/05</td><td><span class="tag tag-red">↑ 8%</span></td><td>Comparar con Amorim</td></tr>
+      <tr><td>Cattorini Hnos.</td><td>Botellas 750ml</td><td>$890 / u</td><td>02/06</td><td><span class="tag tag-green">↓ 2%</span></td><td>Mantener proveedor</td></tr>
+      <tr><td>Gráfica Cuyo</td><td>Etiquetas</td><td>$145 / u</td><td>20/06</td><td><span class="tag tag-amber">= estable</span></td><td>Negociar volumen</td></tr>
+      <tr><td>Pack Andino</td><td>Cápsulas</td><td>$98 / u</td><td>10/06</td><td><span class="tag tag-green">↓ 5%</span></td><td>Aumentar pedido</td></tr>
+    </table>
+    <div class="section-title"><span class="accent"></span> Asistente Nexaia</div>
+    <div class="ai-box">
+      <div class="ai-icon">AI</div>
+      <div class="ai-text">El precio de corchos de Corchera Trapal subió 8% en los últimos 3 meses, por encima de la inflación del sector. Detecté que <strong>Amorim Cork</strong> ofrece un producto equivalente con histórico de precio más estable. Si reasignás el 50% del volumen, la proyección de ahorro anual es de <strong>$1.240.000</strong>.</div>
+    </div>
+  </div>
+
+</div>
+
+<script>
+  document.querySelectorAll('.nav-item').forEach(item=>{
+    item.addEventListener('click',()=>{
+      document.querySelectorAll('.nav-item').forEach(i=>i.classList.remove('active'));
+      document.querySelectorAll('.view').forEach(v=>v.classList.remove('active'));
+      item.classList.add('active');
+      document.getElementById(item.dataset.view).classList.add('active');
+    });
+  });
+
+  let running = false;
+  function runEmbotellado(){
+    if(running) return;
+    running = true;
+    const total = 8400;
+    let count = 0;
+    const counterEl = document.getElementById('bottleCount');
+    const stock = {
+      botellas: {start:12500, used:0, el:document.getElementById('ins-botellas'), bar:document.getElementById('bar-botellas')},
+      corchos: {start:9800, used:0, el:document.getElementById('ins-corchos'), bar:document.getElementById('bar-corchos')},
+      etiquetas: {start:11200, used:0, el:document.getElementById('ins-etiquetas'), bar:document.getElementById('bar-etiquetas')},
+      capsulas: {start:10600, used:0, el:document.getElementById('ins-capsulas'), bar:document.getElementById('bar-capsulas')},
+    };
+    const step = 200;
+    const interval = setInterval(()=>{
+      count += step;
+      if(count > total) count = total;
+      counterEl.textContent = count.toLocaleString('es-AR');
+      counterEl.classList.add('flash');
+      setTimeout(()=>counterEl.classList.remove('flash'),300);
+
+      Object.values(stock).forEach(s=>{
+        s.used = count;
+        const remaining = s.start - s.used;
+        s.el.textContent = remaining.toLocaleString('es-AR');
+        const pct = Math.max(0, (remaining/s.start)*100);
+        s.bar.style.width = pct + '%';
+        s.bar.style.background = pct < 30 ? 'var(--red)' : pct < 60 ? 'var(--amber)' : 'var(--green)';
+      });
+
+      if(count >= total){
+        clearInterval(interval);
+        running = false;
+        document.getElementById('embo-ai').querySelector('.ai-text').innerHTML =
+          '<strong>Carga completada:</strong> 8.400 botellas registradas en el lote B-2024-07. Se descontaron automáticamente 8.400 botellas, 8.400 corchos, 8.400 etiquetas y 8.400 cápsulas del stock general, sin planillas ni conteo manual. El sistema actualizó el stock de insumos y recalculó los días de cobertura en tiempo real.';
+      }
+    }, 120);
+  }
+</script>
+
+</body>
+</html>
