@@ -1,0 +1,132 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 300 360" width="300" height="360">
+
+  <!-- SHAPE: building facade (two shoulders + center arch) + rectangular body -->
+  <!-- Full label path: shoulders on sides, arch center top, straight sides, flat bottom -->
+  <defs>
+    <clipPath id="labelClip">
+      <path d="
+        M30 220
+        L30 130
+        Q30 100 55 100
+        L70 100
+        Q70 80 85 68
+        Q110 48 150 48
+        Q190 48 205 68
+        Q220 80 220 100
+        L235 100
+        Q260 100 260 130
+        L260 220
+        Z
+      "/>
+    </clipPath>
+  </defs>
+
+  <!-- Label body fill -->
+  <path d="
+    M30 220
+    L30 130
+    Q30 100 55 100
+    L70 100
+    Q70 80 85 68
+    Q110 48 150 48
+    Q190 48 205 68
+    Q220 80 220 100
+    L235 100
+    Q260 100 260 130
+    L260 220
+    Z
+  " fill="#8B1C3A"/>
+
+  <!-- White horizontal stripes over rectangular body only (below shoulders) -->
+  <g clip-path="url(#labelClip)">
+    <rect x="30" y="108" width="230" height="7" fill="white" opacity="0.9"/>
+    <rect x="30" y="122" width="230" height="7" fill="white" opacity="0.9"/>
+    <rect x="30" y="136" width="230" height="7" fill="white" opacity="0.9"/>
+    <rect x="30" y="150" width="230" height="7" fill="white" opacity="0.9"/>
+    <rect x="30" y="164" width="230" height="7" fill="white" opacity="0.9"/>
+    <rect x="30" y="178" width="230" height="7" fill="white" opacity="0.9"/>
+    <rect x="30" y="192" width="230" height="7" fill="white" opacity="0.9"/>
+    <rect x="30" y="206" width="230" height="7" fill="white" opacity="0.9"/>
+  </g>
+
+  <!-- White circle (tag hole) in arch -->
+  <circle cx="150" cy="74" r="13" fill="white"/>
+
+  <!-- CACTUS (gray, offset slightly right) -->
+  <!-- Main trunk: tall, slightly organic -->
+  <path d="
+    M152 222
+    Q150 222 148 218
+    L144 130
+    Q143 115 152 112
+    Q161 112 160 127
+    L158 218
+    Q156 222 152 222
+  " fill="#A0A8A0"/>
+
+  <!-- Left arm: goes left then curves up -->
+  <path d="
+    M148 160
+    Q148 158 144 156
+    L108 156
+    Q100 156 99 148
+    Q98 140 106 139
+    L148 139
+    Z
+  " fill="#A0A8A0"/>
+  <!-- Left arm upward extension -->
+  <path d="
+    M99 148
+    Q98 140 99 120
+    Q100 112 108 112
+    Q116 112 116 120
+    L116 156
+    Q107 157 99 148
+  " fill="#A0A8A0"/>
+
+  <!-- Right arm: goes right then up -->
+  <path d="
+    M158 178
+    Q158 176 162 174
+    L195 174
+    Q203 174 204 166
+    Q205 158 197 157
+    L158 157
+    Z
+  " fill="#A0A8A0"/>
+  <!-- Right arm upward extension -->
+  <path d="
+    M204 166
+    Q205 158 204 140
+    Q203 132 195 132
+    Q187 132 187 140
+    L187 174
+    Q196 175 204 166
+  " fill="#A0A8A0"/>
+
+  <!-- Cactus highlight/texture -->
+  <path d="M152 115 Q157 130 156 145 Q154 160 152 175 Q150 190 150 205 Q148 205 148 190 Q147 175 148 160 Q149 145 150 130 Z" fill="#B8C0B8" opacity="0.5"/>
+
+  <!-- TEXT: Bodega -->
+  <text
+    x="150" y="262"
+    font-family="'Trebuchet MS', 'Gill Sans', sans-serif"
+    font-size="30"
+    fill="#8B1C3A"
+    text-anchor="middle"
+    font-weight="400"
+    letter-spacing="1"
+  >Bodega</text>
+
+  <!-- TEXT: Yacochuya -->
+  <text
+    x="150" y="310"
+    font-family="'Trebuchet MS', 'Gill Sans', sans-serif"
+    font-size="46"
+    fill="#8B1C3A"
+    text-anchor="middle"
+    font-weight="700"
+    letter-spacing="-1"
+  >Yacochuya</text>
+
+</svg>
